@@ -12,8 +12,9 @@ const ALL_MOVE_KEY_CODES = [
 ];
 
 export class Player {
-  constructor(x, y, context) {
+  constructor(x, y, context, movementLimits) {
     this.velocity = 3;
+    this.radius = 15;
     // this.velocity = 3 ( скорость персонажа )
     this.x = x;
     this.y = y;
@@ -22,7 +23,14 @@ export class Player {
       x: 0,
       y: 0,
     };
-    
+
+    this.movementLimits = {
+      minX: movementLimits.minX + this.radius,
+      maxX: movementLimits.maxX - this.radius,
+      minY: movementLimits.minY + this.radius,
+      maxY: movementLimits.maxY - this.radius,
+    };
+
     this.keyMap = new Map();
     // слушатель курсора
     document.addEventListener("mousemove", (event) => {
@@ -45,20 +53,20 @@ export class Player {
     this.imageTick = 0;
   }
 
-    drawImg() {
-        const imageTickLimit = 18;
-        let subX = 0;
-        if (!this.isMoving) {
-            subX = 0;
-            this.imageTick = 0;
-        } else {
-            subX = this.imageTick > imageTickLimit ? this.imageWidth * 2 : this.imageWidth;
-            this.imageTick++;
-        }
-        if (this.imageTick > imageTickLimit * 2) {
-            this.imageTick = 0;
-        }
-
+  drawImg() {
+    const imageTickLimit = 18;
+    let subX = 0;
+    if (!this.isMoving) {
+      subX = 0;
+      this.imageTick = 0;
+    } else {
+      subX =
+        this.imageTick > imageTickLimit ? this.imageWidth * 2 : this.imageWidth;
+      this.imageTick++;
+    }
+    if (this.imageTick > imageTickLimit * 2) {
+      this.imageTick = 0;
+    }
 
     // добавляем картинку в CANVAS в неподвижном состоянии спомощью встройного метода drawImg();
     this.context.drawImage(
@@ -91,9 +99,10 @@ export class Player {
   }
   // вэтот методе мы будем рисовать персонажа и дальше его новую позицию, тем самам нам будет казаться что он ходит по полю
   update() {
-      this.draw();
-      this.isMoving = this.shouldMove(ALL_MOVE_KEY_CODES);
+    this.draw();
+    this.isMoving = this.shouldMove(ALL_MOVE_KEY_CODES);
     this.updatePosition();
+    this.checkPositionLimitAndUpdate();
   }
   //меняет координаты героя
   updatePosition() {
@@ -102,6 +111,14 @@ export class Player {
     if (this.shouldMove(MOVE_LEFT_KEYS_CODES)) this.x -= this.velocity;
     if (this.shouldMove(MOVE_RIGHT_KEYS_CODES)) this.x += this.velocity;
   }
+
+  checkPositionLimitAndUpdate() {
+    if (this.y < this.movementLimits.minY) this.y = this.movementLimits.minY;
+    if (this.y > this.movementLimits.maxY) this.y = this.movementLimits.maxY;
+    if (this.x < this.movementLimits.minX) this.x = this.movementLimits.minX;
+    if (this.x > this.movementLimits.maxX) this.x = this.movementLimits.maxX;
+  }
+
   //обновляет позицию
   shouldMove(keys) {
     return keys.some((key) => this.keyMap.get(key));
