@@ -41,13 +41,29 @@ export class Player {
     this.image.src = "./img/player.png";
     this.imageWidth = 50;
     this.imageHeight = 60;
+    this.isMoving = false;
+    this.imageTick = 0;
   }
 
-  drawImg() {
+    drawImg() {
+        const imageTickLimit = 18;
+        let subX = 0;
+        if (!this.isMoving) {
+            subX = 0;
+            this.imageTick = 0;
+        } else {
+            subX = this.imageTick > imageTickLimit ? this.imageWidth * 2 : this.imageWidth;
+            this.imageTick++;
+        }
+        if (this.imageTick > imageTickLimit * 2) {
+            this.imageTick = 0;
+        }
+
+
     // добавляем картинку в CANVAS в неподвижном состоянии спомощью встройного метода drawImg();
     this.context.drawImage(
       this.image,
-      0,
+      subX,
       0,
       this.imageWidth,
       this.imageHeight,
@@ -75,7 +91,8 @@ export class Player {
   }
   // вэтот методе мы будем рисовать персонажа и дальше его новую позицию, тем самам нам будет казаться что он ходит по полю
   update() {
-    this.draw();
+      this.draw();
+      this.isMoving = this.shouldMove(ALL_MOVE_KEY_CODES);
     this.updatePosition();
   }
   //меняет координаты героя
