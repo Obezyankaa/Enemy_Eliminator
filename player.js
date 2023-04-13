@@ -1,5 +1,20 @@
+// клавиши 
+
+const MOVE_UP_KEY_CODES = ["ArrowUp", "KeyW"];
+const MOVE_DOWN_KEYS_CODES = ["ArrowDown", "KeyS"];
+const MOVE_LEFT_KEYS_CODES = ["ArrowLeft", "KeyA"];
+const MOVE_RIGHT_KEYS_CODES = ["ArrowRight", "KeyD"];
+const ALL_MOVE_KEY_CODES = [
+  ...MOVE_UP_KEY_CODES,
+  ...MOVE_DOWN_KEYS_CODES,
+  ...MOVE_LEFT_KEYS_CODES,
+  ...MOVE_RIGHT_KEYS_CODES,
+];
+
 export class Player {
   constructor(x, y, context) {
+    this.velocity = 3;
+    // this.velocity = 3 ( скорость персонажа )
     this.x = x;
     this.y = y;
     this.context = context;
@@ -7,11 +22,19 @@ export class Player {
       x: 0,
       y: 0,
     };
+    
+    this.keyMap = new Map();
     // слушатель курсора
     document.addEventListener("mousemove", (event) => {
       this.cursorPosition.x = event.clientX;
       this.cursorPosition.y = event.clientY;
     });
+    document.addEventListener("keydown", (event) =>
+      this.keyMap.set(event.code, true)
+    );
+    document.addEventListener("keyup", (event) =>
+      this.keyMap.delete(event.code)
+    );
 
     // создаем экземпляр персонажа
     this.image = new Image();
@@ -36,18 +59,34 @@ export class Player {
   }
   // этот метод рисует нам картинку таким образом, что наш герой всегда всмотрит на курсор мышы
   // будем менять канвас, перерисовывать картинку каждый раз, и возвращаться в исходное состоявие
-    draw() {
-      // сохраняем контекст, чтоб вернуться к нему после
+  draw() {
+    // сохраняем контекст, чтоб вернуться к нему после
 
-      this.context.save();
-      let angle = Math.atan2(
-        this.cursorPosition.y - this.y,
-        this.cursorPosition.x - this.x
-      );
-      this.context.translate(this.x, this.y);
-      this.context.rotate(angle + Math.PI / 2);
-      this.context.translate(-this.x, -this.y);
-      this.drawImg();
-      this.context.restore();
-    }
+    this.context.save();
+    let angle = Math.atan2(
+      this.cursorPosition.y - this.y,
+      this.cursorPosition.x - this.x
+    );
+    this.context.translate(this.x, this.y);
+    this.context.rotate(angle + Math.PI / 2);
+    this.context.translate(-this.x, -this.y);
+    this.drawImg();
+    this.context.restore();
+  }
+  // вэтот методе мы будем рисовать персонажа и дальше его новую позицию, тем самам нам будет казаться что он ходит по полю
+  update() {
+    this.draw();
+    this.updatePosition();
+  }
+  //меняет координаты героя
+  updatePosition() {
+    if (this.shouldMove(MOVE_UP_KEY_CODES)) this.y -= this.velocity;
+    if (this.shouldMove(MOVE_DOWN_KEYS_CODES)) this.y += this.velocity;
+    if (this.shouldMove(MOVE_LEFT_KEYS_CODES)) this.x -= this.velocity;
+    if (this.shouldMove(MOVE_RIGHT_KEYS_CODES)) this.x += this.velocity;
+  }
+  //обновляет позицию
+  shouldMove(keys) {
+    return keys.some((key) => this.keyMap.get(key));
+  }
 }

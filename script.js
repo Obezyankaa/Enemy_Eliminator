@@ -20,5 +20,5 @@ function animate() {
   context.clearRect(0, 0, canvas.width, canvas.height);
 
   // отрисовываем персонажа который создан в файле player.js
-  player.draw();
+  player.update();
 }
