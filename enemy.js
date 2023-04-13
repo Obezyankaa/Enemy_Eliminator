@@ -5,7 +5,8 @@ export class Enemy {
     this.context = context;
     this.player = player;
 
-    this.radius = 15;
+      this.radius = 15;
+      this.health = 1;
     // рандомные шаги влагов с разных сторон экрана
     if (Math.random() < 0.5) {
       this.x =

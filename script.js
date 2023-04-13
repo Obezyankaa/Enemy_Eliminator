@@ -1,6 +1,7 @@
 import { Player } from "./player.js"
 import { Projectile } from "./projectile.js";
 import { Enemy } from "./enemy.js";
+import { distanceBetweenTwoPoints } from "./utilities.js";
 
 //сылка на контекст для рисования в конвасе 
 const canvas = document.querySelector('canvas');
@@ -63,6 +64,8 @@ function animate() {
   context.clearRect(0, 0, canvas.width, canvas.height);
 
   projectiles = projectiles.filter(projectileInsideWindow);
+  enemies.forEach((enemy) => checkHittingEnemy(enemy));
+  enemies = enemies.filter((enemy) => enemy.health > 0);
 
   // пускает сняряды 
   projectiles.forEach((projectile) => projectile.update());
@@ -78,4 +81,26 @@ function projectileInsideWindow(projectile) {
     projectile.y + projectile.radius > 0 &&
     projectile.y - projectile.radius < canvas.height
   );
+}
+
+function checkHittingEnemy(enemy) {
+  projectiles.some((projectile, index) => {
+    const distance = distanceBetweenTwoPoints(
+      projectile.x,
+      projectile.y,
+      enemy.x,
+      enemy.y
+    );
+    if (distance - enemy.radius - projectile.radius > 0) return false;
+
+    removeProjectileByIndex(index);
+    enemy.health--;
+
+    return true;
+  });
+}
+
+// она 
+function removeProjectileByIndex(index) {
+  projectiles.splice(index, 1);
 }
