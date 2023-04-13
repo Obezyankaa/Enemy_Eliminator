@@ -1,5 +1,6 @@
 import { Player } from "./player.js"
 import { Projectile } from "./projectile.js";
+import { Enemy } from "./enemy.js";
 
 //сылка на контекст для рисования в конвасе 
 const canvas = document.querySelector('canvas');
@@ -11,12 +12,15 @@ canvas.height = document.documentElement.clientHeight;
 
 let player;
 let projectiles = [];
+let enemies = [];
 
 startGame();
 
 function startGame() {
   init();
   animate();
+  //функция врагов
+  spawnEnemies();
 }
 
 function init() {
@@ -48,14 +52,30 @@ function createProjectile(event) {
   )
 }
 
+function spawnEnemies() {
+  enemies.push(new Enemy(canvas.width, canvas.height, context, player)); 
+}
+
 // функция отрисовки анимации 
 function animate() {
     // запускает перерисовку на следующим кадре 
   requestAnimationFrame(animate);
   context.clearRect(0, 0, canvas.width, canvas.height);
 
+  projectiles = projectiles.filter(projectileInsideWindow);
+
   // пускает сняряды 
   projectiles.forEach((projectile) => projectile.update());
   // отрисовываем персонажа который создан в файле player.js
   player.update();
+  enemies.forEach((enemies) => enemies.update());
+}
+
+function projectileInsideWindow(projectile) {
+  return (
+    projectile.x + projectile.radius > 0 &&
+    projectile.x - projectile.radius < canvas.width &&
+    projectile.y + projectile.radius > 0 &&
+    projectile.y - projectile.radius < canvas.height
+  );
 }
