@@ -1,3 +1,4 @@
+import { Particle } from "./particle.js";
 import { sinBetweenTwoPoints, cosBetweenTwoPoints } from "./utilities.js";
 
 export class Enemy {
@@ -5,8 +6,8 @@ export class Enemy {
     this.context = context;
     this.player = player;
 
-      this.radius = 15;
-      this.health = 1;
+    this.radius = 15;
+    this.health = 1;
     // рандомные шаги влагов с разных сторон экрана
     if (Math.random() < 0.5) {
       this.x =
@@ -65,5 +66,10 @@ export class Enemy {
     };
     this.x += this.velocity.x;
     this.y += this.velocity.y;
+  }
+  createExplosion(particles) {
+    for (let i = 0; i < 50; i++) {
+      particles.push(new Particle(this.x, this.y, this.context));
+    }
   }
 }

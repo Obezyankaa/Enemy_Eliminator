@@ -14,6 +14,7 @@ canvas.height = document.documentElement.clientHeight;
 let player;
 let projectiles = [];
 let enemies = [];
+let particles = [];
 
 startGame();
 
@@ -63,10 +64,14 @@ function animate() {
   requestAnimationFrame(animate);
   context.clearRect(0, 0, canvas.width, canvas.height);
 
+  // удаляет прозрачные частицы крови 
+  particles = particles.filter((particle) => particle.alpha > 0);
   projectiles = projectiles.filter(projectileInsideWindow);
   enemies.forEach((enemy) => checkHittingEnemy(enemy));
   enemies = enemies.filter((enemy) => enemy.health > 0);
 
+  //запускает эффект крови 
+  particles.forEach((particle) => particle.update());
   // пускает сняряды 
   projectiles.forEach((projectile) => projectile.update());
   // отрисовываем персонажа который создан в файле player.js
@@ -95,6 +100,10 @@ function checkHittingEnemy(enemy) {
 
     removeProjectileByIndex(index);
     enemy.health--;
+
+    if (enemy.health < 1) {
+      enemy.createExplosion(particles);
+    }
 
     return true;
   });
