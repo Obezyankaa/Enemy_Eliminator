@@ -11,4 +11,4 @@
 
 My telegram you can text me [Telegram](https://t.me/Voloshanovskiy_V)
 
-![travel-website](/preview.mp4)
+![travel-website](/preview.gif)
