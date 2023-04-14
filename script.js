@@ -12,11 +12,13 @@ canvas.width = document.documentElement.clientWidth;
 canvas.height = document.documentElement.clientHeight;
 
 const wastedElement = document.querySelector(".wasted");
+const scoreElement = document.querySelector("#score");
 
 let player;
 let projectiles = [];
 let enemies = [];
 let particles = [];
+let score = 0;
 let animateId;
 let spawnIntervalId;
 let countIntervalId;
@@ -136,6 +138,9 @@ function checkHittingEnemy(enemy) {
     enemy.health--;
 
     if (enemy.health < 1) {
+      // увеличиваем очки 
+      iscreaseScroll();
+      // уберает убитого врага 
       enemy.createExplosion(particles);
     }
 
@@ -146,4 +151,9 @@ function checkHittingEnemy(enemy) {
 // она 
 function removeProjectileByIndex(index) {
   projectiles.splice(index, 1);
+}
+
+function iscreaseScroll() {
+  score += 250;
+  scoreElement.innerHTML = score;
 }
