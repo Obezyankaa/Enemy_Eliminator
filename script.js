@@ -18,6 +18,8 @@ let projectiles = [];
 let enemies = [];
 let particles = [];
 let animateId;
+let spawnIntervalId;
+let countIntervalId;
 
 startGame();
 
@@ -58,7 +60,19 @@ function createProjectile(event) {
 }
 
 function spawnEnemies() {
-  enemies.push(new Enemy(canvas.width, canvas.height, context, player)); 
+  let countOfSpawnEnemis = 1;
+  // каждые 30 секунд появляются больше и больше врагов
+  countIntervalId = setInterval(() => countOfSpawnEnemis++, 40000);
+  // враги появляются каждую секунду 
+  spawnIntervalId = setInterval(() => spawnCountEnemies(countOfSpawnEnemis), 1000);
+  spawnCountEnemies(countOfSpawnEnemis);
+}
+
+// накидывает всё больше и больше врагов 
+function spawnCountEnemies(count) {
+  for (let i = 0; i < count; i++) {
+      enemies.push(new Enemy(canvas.width, canvas.height, context, player));
+  }
 }
 
 // функция отрисовки анимации 
@@ -77,6 +91,9 @@ function animate() {
   const isGameOver = enemies.some(checkHittingPlayer);
   if (isGameOver) {
     wastedElement.style.display = "block";
+      // после окончания игры новые враги не появляются на карте 
+      clearInterval(countIntervalId);
+      clearInterval(spawnIntervalId);
       cancelAnimationFrame(animateId);
     }
 
