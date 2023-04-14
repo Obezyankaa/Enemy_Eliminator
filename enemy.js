@@ -7,7 +7,8 @@ export class Enemy {
     this.player = player;
 
     this.radius = 15;
-    this.health = 1;
+    const enemyType = Math.random() > 0.8 ? 2 : 1;
+    this.health = enemyType;
     // рандомные шаги влагов с разных сторон экрана
     if (Math.random() < 0.5) {
       this.x =
@@ -19,9 +20,9 @@ export class Enemy {
         Math.random() < 0.5 ? 0 - this.radius : canvasHeight + this.radius;
     }
 
-    //создаем врага
+    //создаем врагов
     this.image = new Image();
-    this.image.src = "./img/enemy_1.png";
+    this.image.src = `./img/enemy_${enemyType}.png`;
     this.imageWidth = 50;
     this.imageHeight = 60;
     this.imageTick = 0;
