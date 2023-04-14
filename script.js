@@ -11,10 +11,13 @@ const context = canvas.getContext('2d');
 canvas.width = document.documentElement.clientWidth;
 canvas.height = document.documentElement.clientHeight;
 
+const wastedElement = document.querySelector(".wasted");
+
 let player;
 let projectiles = [];
 let enemies = [];
 let particles = [];
+let animateId;
 
 startGame();
 
@@ -61,7 +64,7 @@ function spawnEnemies() {
 // функция отрисовки анимации 
 function animate() {
     // запускает перерисовку на следующим кадре 
-  requestAnimationFrame(animate);
+  animateId = requestAnimationFrame(animate);
   context.clearRect(0, 0, canvas.width, canvas.height);
 
   // удаляет прозрачные частицы крови 
@@ -70,6 +73,15 @@ function animate() {
   enemies.forEach((enemy) => checkHittingEnemy(enemy));
   enemies = enemies.filter((enemy) => enemy.health > 0);
 
+  // если нас коснулся враг, мы останавливаем игру 
+  const isGameOver = enemies.some(checkHittingPlayer);
+  if (isGameOver) {
+    wastedElement.style.display = "block";
+      cancelAnimationFrame(animateId);
+    }
+
+    
+    
   //запускает эффект крови 
   particles.forEach((particle) => particle.update());
   // пускает сняряды 
@@ -86,6 +98,11 @@ function projectileInsideWindow(projectile) {
     projectile.y + projectile.radius > 0 &&
     projectile.y - projectile.radius < canvas.height
   );
+}
+
+function checkHittingPlayer(enemy) {
+  const distance = distanceBetweenTwoPoints(player.x, player.y, enemy.x, enemy.y);
+  return distance - enemy.radius - player.radius < 0;
 }
 
 function checkHittingEnemy(enemy) {
